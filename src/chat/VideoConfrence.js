@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Button, TextInput, Text, Platform, SafeAreaView } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Button, TextInput, Text, Platform, SafeAreaView, Pressable } from 'react-native';
 import SocketIOClient from 'socket.io-client';
-import _Alert from './utils/alert';
-import { mediaDevices, RTCPeerConnection, RTCSessionDescription, RTCView, RTCIceCandidate } from './utils/webrtc';
+import { mediaDevices, RTCPeerConnection, RTCSessionDescription, RTCView, RTCIceCandidate } from '../utils/webrtc';
 
 let socket = SocketIOClient.connect("http://192.168.42.42", { transports: ["websocket"] })
 
@@ -14,23 +13,34 @@ let pcs = {},
   localRef = '',
   roomId = ''
 
-const Webrtc = () => {
+const Webrtc = (p) => {
   const [user, setuser] = useState([])
+  const [roomInput, setroomInput] = useState('')
   const [request, setrequest] = useState([])
   const [admin, setadmin] = useState([])
+  const [startRoom, setstartRoom] = useState(false)
   const [isAdmin, setisAdmin] = useState({})
+  const [left, setleft] = useState(false)
 
+  const ref = useRef()
+  const leftIcon = useRef()
+  
+
+  p.Dimensions.addEventListener('change', ({ window: { width, height } }) => {
+    p.setwidth(width); p.setheight(height)
+  })
 
 
 
   useEffect(() => {
 
-    socket.emit('startVideoConfrence',true)
+    socket.emit('startVideoConfrence')
 
 
-    socket.on('startVideoConfrence', (users) => {
-      let u = users.filter((u)=>u.id !== socket.id)
-      setadmin(users)
+    socket.on('startVideoConfrence', (roomAdminId) => {
+      console.log(roomAdminId);
+      setadmin(roomAdminId)
+      thisId = socket.id
     })
 
     if (mediaDevices) mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
@@ -44,26 +54,22 @@ const Webrtc = () => {
       if (data.type === "create") {
         roomId = room;
         setisAdmin({ room });
+        setstartRoom(true)
       }
       else if (data.type === "joinAdmin") {
         roomId = room;
         setisAdmin({ room });
+        setstartRoom(true)
         socket.emit('offer1', socketId, room)
       }
       else {
         if (data.type === "join") {
-          _Alert.alert(
-            `جواب ${socketId} رو میدی`,
-            '',
-          [
-            {text:'no',onPress:()=>{
-              socket.emit('reject', socketId); 
-            }},
-            {text:'yes',onPress:()=>{
-              socket.emit('offer1', socketId, room);
-            }}
-          ])
-
+          setrequest(request => {
+            let find = request.find((r) => r === socketId)
+            if (!find)
+              return request.concat(socketId)
+            else return request
+          })
         }
       }
     })
@@ -94,7 +100,6 @@ const Webrtc = () => {
         pcs[socketId].setLocalDescription(offer);
         socket.emit('offer2', offer, socketId)
         pcs[socketId].onicecandidate = ({ candidate }) => { candidate && socket.emit('candidate', candidate, room) };
-      
       }
     })
 
@@ -102,10 +107,12 @@ const Webrtc = () => {
 
     socket.on('offer2', async (offer, socketId) => {
       if (socketId !== thisId) {
+        setstartRoom(true)
         pcs[socketId].setRemoteDescription(new RTCSessionDescription(offer));
         let answer = await pcs[socketId].createAnswer()
         pcs[socketId].setLocalDescription(answer);
         socket.emit('answer', answer, socketId)
+        // pcs[socketId].onicecandidate = ({ candidate }) => { candidate && socket.emit('candidate', candidate, roomId) };
       }
     })
 
@@ -127,6 +134,7 @@ const Webrtc = () => {
         setuser((user) => user.filter((u) => u.id === 1))
         streams = {}
         pcs = []
+        setstartRoom(false)
       }
       if (!call) {
         setuser((user) => user.filter((u) => u.id !== socketId))
@@ -144,10 +152,18 @@ const Webrtc = () => {
   }, []);
 
 
-  const joinBtnId = () => {
-    socket.emit('permission', '_' + socket.id , null )
+  const joinBtn = () => {
+    if (!roomInput) return;
+    socket.emit('permission', roomInput, null)
   };
 
+
+  const liveBtn = (socketId) => {
+    if (!socketId) {
+      socket.emit('leave', roomId, null)
+    }
+    else { socket.emit('leave', roomId, socketId) }
+  };
 
 
 
@@ -181,19 +197,55 @@ const Webrtc = () => {
 
 
 
+
   return (
-    <View style={[{ height: '100%', flexDirection: 'row' }, Platform.OS === 'web' && { height: 'calc(100vh - 65px)' }]} >
-      <View onLayout={joinBtnId} style={{ height: '100%', width: '70%' }} >
+    <View style={[{ overflowX:'hidden',height: '100%', flexDirection: 'row' }, Platform.OS === 'web' && { height: 'calc(100vh)' }]} >
+      <View style={{ height: '100%', width: '70%' }} >
+
         <SafeAreaView />
-        {admin.map((adminId, i) => (
-          admin && isAdmin.room != adminId.room && <Text key={i} onPress={() => { socket.emit('permission', adminId.room, adminId.id) }} >{adminId.id}</Text>))}
-         <View style={{ flex: 1, width: '100%', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }} >
+
+
+        <View style={{ width: '40%', flexDirection: 'row' }} >
+          {!startRoom && <TextInput onSubmitEditing={joinBtn} style={{ height: 33, borderWidth: 1, width: '100%' }} onChangeText={(text) => setroomInput(text)} />}
+          {!startRoom && <Button onPress={joinBtn} title="Join" />}
+          {startRoom && <Button onPress={() => liveBtn(null)} title="Leave" />}
+        </View>
+
+        <View style={{ flex: 1, width: p.width, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }} >
           {user.map((user, i) => (
-            <View key={i} style={[{ flexGrow: 1, backgroundColor: 'silver', borderWidth: .1 }, stl]}>
+            <View key={i} style={[{ flexGrow: 1, backgroundColor: 'silver', borderWidth: .1, backgroundColor: 'red' }, stl]}>
               {user.stream && <RTCView streamURL={user.stream} objectFit={'cover'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              {isAdmin.room == roomId && user.id != 1 && <Button onPress={() => liveBtn(user.id)} style={{ position: "absolute", bottom: 2 }} title="click" />}
             </View>
           ))}
         </View>
+      </View>
+
+      <View ref={leftIcon} style={{ width: 18, top: - 9, position:'absolute', left: - 1 }} >
+        <Text style={{ fontSize: 30 }}
+        onPress={() => { 
+          setleft(!left);
+          ref.current && ref.current.setNativeProps({ style: { left: left ? -300 : 0 } })
+         }}
+        >⌲</Text>
+      </View>
+      <View ref={ref}
+      onMoveShouldSetResponder={() => { 
+        setleft(!left);
+        ref.current && ref.current.setNativeProps({ style: { left: left ? -300 : 0 } })
+       }}
+      style={{ height: '99%', width: 150, backgroundColor: '#fff', position: 'absolute', left: -300 }} >
+        {request.map((id) => (
+          <View key={id} style={{ height: 100, width: '100%', borderWidth: 1, alignItems: 'center', justifyContent: 'center', margin: 5 }} >
+            <View style={{ height: '60%', width: '60%', alignItems: 'center', }} >
+              <Text style={{ width: '100%' }} >{id}</Text>
+            </View>
+            <View style={{ height: '30%', width: '100%', flexDirection: 'row', alignContent: 'space-around' }} >
+              <Button onPress={() => { socket.emit('offer1', id, roomId); setrequest(r => r.filter((request) => request != id)) }} title="success" />
+              <Button onPress={() => { socket.emit('reject', id); setrequest(r => r.filter((request) => request != id)) }} title="reject" />
+            </View>
+          </View>
+        ))}
       </View>
 
     </View>

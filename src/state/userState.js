@@ -41,10 +41,6 @@ export function userState(p) {
 
       Axios.defaults.headers.common["Authorization"] = data.token
       p.setchangeLoginUser(!p.changeLoginUser)
-      p.route.params?.name !== 'ChildFood' ?
-        p.navigation.navigate("Home") :
-        p.route.params.price != 0 ?
-          p.navigation.navigate("FinallFoodPayment") :
           p.navigation.navigate("Home")
       // send
     }

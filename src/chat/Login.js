@@ -8,7 +8,7 @@ const Login = (p) => {
   
   return (
         <Form {...p} p c ch ph checkText="مرا بخاطر بسپار" onClick={() => { p.setchange(!p.change); sendLogin(); }} >
-          <Text onPress={() => p.navigation.navigate('ForgetPass')} >فراموشی رمز عبور</Text>
+          <Text onPress={() => p.navigation.navigate('Register')} >هنوز ثبت نام نکرده اید</Text>
         </Form>
   )
 }

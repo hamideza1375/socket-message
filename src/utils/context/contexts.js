@@ -12,7 +12,7 @@ import {localhost} from '../axios/axios'
 import Alert from "../alert"
 import {create, close} from "../notification"
 
-import {loginUser,registerUser, verifycodeRegister, imagechat,videoChat} from '../../services/userService'
+import {loginUser,registerUser, verifycodeRegister, imagechat,VideoChat} from '../../services/userService'
 import SocketIOClient from 'socket.io-client';
 
 
@@ -226,7 +226,7 @@ let socket = SocketIOClient.connect("http://192.168.42.42", { transports: ["webs
 
     create, close,
     rand,setRand,refInput,
-    loginUser,registerUser, verifycodeRegister, imagechat, videoChat,
+    loginUser,registerUser, verifycodeRegister, imagechat, VideoChat,
     useEffect, changeTitle, setchangeTitle,proposalId, setproposalId,
     Keyboard, BackHandler, ToastAndroid, Dimensions,
     useMemo,

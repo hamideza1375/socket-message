@@ -83,8 +83,13 @@ const Form = ({ refInput, rand, setRand, btn = true, contentContainerStyle, over
   const [changeremember, setchangeremember] = useState(true);
 
   useFocusEffect(useCallback(() => {
-    changeRand && setRand(parseInt(Math.random() * 9000 + 1000))
+    setRand(parseInt(Math.random() * 9000 + 1000))
   }, [show2]))
+
+  useFocusEffect(useCallback(() => {
+    return()=> setRand(null)
+  }, []))
+
 
   const [_fullname, set_Fullname] = useState()
   const [_email, set_Email] = useState()
@@ -351,8 +356,8 @@ const Form = ({ refInput, rand, setRand, btn = true, contentContainerStyle, over
 
           {c &&
             <>
-              <KeyboardAvoidingView behavior={"height"} style={{ flex: 1 }}>
-                <View style={[styles.viewCaptcha, { height: 28, alignItems: 'center' }]}>
+              <KeyboardAvoidingView behavior={"height"} style={{ height: 70, minHeight: 70, marginVertical:10 }}>
+                <View style={[styles.viewCaptcha, { height: 28,  alignItems: 'center' }]}>
 
                   <Image source={{ uri: `${host}/captcha.png/${rand}` }} style={styles.imageCaptcha} />
                   <Icon name="refresh" color="#66bbff" size={22}

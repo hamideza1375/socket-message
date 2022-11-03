@@ -8,14 +8,14 @@ import localStorage from '@react-native-async-storage/async-storage';
 // import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import uuid from 'react-native-uuid'
 import { localhost } from '../utils/axios/axios'
-import { Badge, Loading, Dropdown, B_icon, Modal, H3, P, Row, Button, Input, H6 } from '../Components/Html';
+import {Mc_icon,A_icon, Badge, Loading, Dropdown, B_icon, Modal, H3, P, Row, Button, Input, H6 } from '../Components/Html';
 import { useFocusEffect } from '@react-navigation/native';
 // import { imagechat } from '../services/foodService';
 import {imagePicker} from '../utils/imagePicker'
 import Video from '../Components/other/Video';
 import Audio from '../Components/other/Audio';
 import download from '../utils/download'
-import VideoChat from '../VideoChat';
+import VideoChat from './VideoChat';
 
 import { mediaDevices, RTCPeerConnection, RTCSessionDescription, RTCView, RTCIceCandidate } from '../utils/webrtc';
 import Alert from '../utils/alert';
@@ -313,7 +313,7 @@ const Chat = (p) => {
 
   const _imagePicker = () => {
     imagePicker().then(async(res) => {
-      let uriParts = res.uri.split('.');
+      let uriParts = res.name.split('.');
       let fileType = uriParts[uriParts.length - 1];
       const imageName =  `${(new Date().getTime() + Math.random() * 10000).toString()}.${fileType}`;
       await p.imagechat({uri:res,imageName })
@@ -325,15 +325,14 @@ const Chat = (p) => {
 
   const _videoPicker = () => {
     imagePicker('video').then(async(res) => {
-      let uriParts = res.uri.split('.');
+      let uriParts = res.name.split('.');
       let fileType = uriParts[uriParts.length - 1];
       const videoName = `${(new Date().getTime() + Math.random() * 10000).toString()}.${fileType}`;
-      await p.videoChat({uri:res, videoName })
+      await p.VideoChat({uri:res, videoName })
       sendMessage('video', videoName);
       handleFalse()
   })
   }
-
 
 
 
@@ -432,6 +431,14 @@ useEffect(()=>{
  },[p.call])
 
 
+
+ let imageStyle
+ if (p.width <= 650) imageStyle = { width: p.width, height: p.width }
+ if (p.width > 650) imageStyle = { width: 600, height: 600 }
+
+
+
+
   return (
 
   <View style={{ flex: 1, overflow: 'hidden'}} >
@@ -486,7 +493,7 @@ useEffect(()=>{
                     <View style={[{
                       minWidth: 222,width:'80%', alignItems: 'center', marginVertical: 15,
                     }, item.sender.name === p.name ? { flexDirection: 'row' } : { flexDirection: 'row-reverse' }]}>
-                      <View style={[{ minHeight: 111, minWidth: 222,height:'100%',width:'100%', paddingHorizontal: 9, borderRadius: 5 }, item.sender.name === p.name ? { backgroundColor: '#eef' } : { backgroundColor: '#dfdfef' },{ shadowRadius:9,shadowOpacity:.4, elevation:5}]} >
+                      <View style={[{ minHeight: 111, minWidth: 222,width:'100%', paddingHorizontal: 9, borderRadius: 5 }, item.sender.name === p.name ? { backgroundColor: '#eef' } : { backgroundColor: '#dfdfef' },{ shadowRadius:9,shadowOpacity:.4, elevation:5}]} >
                         <View>
                           <View style={[{ paddingTop: 8, justifyContent: 'space-between' }, item.sender.name === p.name ? { flexDirection: 'row' } : { flexDirection: 'row-reverse' }]}>
 
@@ -525,17 +532,16 @@ useEffect(()=>{
                           <View style={{ borderRadius: 4, padding: 4, zIndex: -1, }}>
                        
 
-                       { item.type == 'video' &&
-                        <Pressable
+                       { 
+                       item.type == 'video' &&
+
+                        (<Pressable
                           onPress={() => {
                            if(Platform.OS === 'android' ){
                             p.seturi(`${localhost}/upload/${item.uri}`)
                             p.setresizeVideo(true)
                             p.navigation.setOptions({ headerShown: false })
                        } }}>
-
-        
-
                        {Platform.OS === 'web' ?
                        <Video 
                            source={{ uri: `${localhost}/upload/${item.uri}` }}
@@ -554,19 +560,19 @@ useEffect(()=>{
                            style={{ width:'100%',height:222, objectFit:'cover' }}
                          />
                        }
-                  </Pressable>
+                  </Pressable>)
 
                                 ||
 
-                               item.type == 'image' &&
+                               (item.type == 'image' &&
                                 <Pressable style={{ minHeight: 200 }}>
-
                                   <Pressable
                                     onPress={() => {
                                       p.seturi(`${localhost}/upload/${item.uri}`)
                                       p.setresizeImage(true)
                                       p.navigation.setOptions({ headerShown: false })
-                                    }}>
+                                    }}
+                                    >
 
                                     {item.id != p.id1 &&
                                       <Image
@@ -574,10 +580,9 @@ useEffect(()=>{
                                         source={{ uri: `${localhost}/upload/${item.uri}` }}
                                          />
                                     }
-
                                   </Pressable>
+                                </Pressable>)
 
-                                </Pressable>
                                 ||
 
                                 <TextInput editable={false} multiline style={{ textAlign: 'right', backgroundColor: '#fff', padding: 6, marginTop: 8 }} value={item.msg} />
@@ -621,6 +626,7 @@ useEffect(()=>{
               </Dropdown>
             </View>
             <Input maxLength={1000} style={{ minHeight: 50 }} iconSize={24} styleIcon={{ transform: [{ rotate: '-125deg' }] }} onSubmitEditing={() => sendMessage(null, null)} iconPress={() => sendMessage(null, null)} icon="paper-plane" iconColor="#38a" color="#25a" value={p.newMessage} p="ارسال پیام" onChange={(e) => { /* if (e.nativeEvent.text.length >= 1000) toast('مجاز به تایپ بیشتر از ۱۰۰۰ کارکتر نمیباشین'); */ p.setNewMessage(e.nativeEvent.text); handleKeypress(e) }} onPressIn={() => handleFalse()} />
+
           </View>
         </View>
       </View>
@@ -683,21 +689,22 @@ useEffect(()=>{
 
 
       {p.resizeImage &&
-        <Pressable style={{ alignItems: 'center', flex: 1, position: 'absolute', right: 0, top: 0, width: p.width, height: p.height }}>
+        <Pressable style={{ alignItems: 'center',justifyContent:'center', flex: 1, position: 'absolute', right: 0, top: 0, width: '100%', height: '100%', backgroundColor:'#fff', cursor:null }}>
 
-          <View style={{ backgroundColor: '#666', position: 'absolute', zIndex: 11, alignItems: 'center', top: Platform.OS === 'ios'?40:1, left: 1, paddingHorizontal: 3, borderRadius: 4 }}>
-            <_Icon name='remove' size={35} color='black' style={{ fontWeight: '100' }} onPress={() => { p.setresizeImage(false); p.navigation.setOptions({ headerShown: true }) }} />
+          <View style={{ backgroundColor: '#000', position: 'absolute', zIndex: 11, alignItems: 'center', top: Platform.OS === 'ios'?40:1, left: 1, borderRadius: 4 ,}}>
+            <Mc_icon name='close' size={35} color='#fff' style={{ fontWeight: '100' }} onPress={() => { p.setresizeImage(false); p.navigation.setOptions({ headerShown: true }) }} />
           </View>
 
-          <View style={{ backgroundColor: '#666', position: 'absolute', zIndex: 11, alignItems: 'center', top: Platform.OS === 'ios'?40:1, right: 1, paddingHorizontal: 3, borderRadius: 4 }}>
-            <_Icon name='ellipsis-h' size={35} color='black' style={{ fontWeight: '100' }}
+          <View style={{ width:30,alignItems:'center',backgroundColor: '#000', position: 'absolute', zIndex: 11, top: Platform.OS === 'ios'?40:1, right: 1, paddingTop: 3,paddingBottom:1, borderRadius: 4,}}>
+            <Icon name='ellipsis-v' size={35} color='#fff' style={{ fontWeight: '100', transform:[{scaleX:.5}]  }}
               onPress={() => {
                 download(p.uri)
               }} />
           </View>
 
           <Image
-            style={{ width: p.width, height: p.height, alignSelf: 'center' }}
+          objectFit='cover'
+            style={{ width: '100%', height:p.width > p.height? '100%':p.width, alignSelf: 'center', objectFit:'cover' }}
             source={{ uri: p.uri }}
             />
         </Pressable>
@@ -705,22 +712,22 @@ useEffect(()=>{
 
 
 
-      {p.resizeVideo &&
-        <Pressable style={{ alignItems: 'center', flex: 1, position: 'absolute', right: 0, top: 0, width: p.width, height: p.height }}>
+      {(Platform.OS === 'android') && (p.resizeVideo )&&
+        <Pressable style={{ alignItems: 'center', flex: 1, position: 'absolute', right: 0, top: 0, width: '100%', height: '100%', backgroundColor:'#fff' }}>
 
-          <View style={{ backgroundColor: '#666', position: 'absolute', zIndex: 11, alignItems: 'center', top:Platform.OS === 'ios'?40: 1, left: 1, paddingHorizontal: 3, borderRadius: 4 }}>
-            <_Icon name='remove' size={35} color='black' style={{ fontWeight: '100' }} onPress={() => { p.setresizeVideo(false); p.navigation.setOptions({ headerShown: true }) }} />
+          <View style={{  backgroundColor: '#000', position: 'absolute', zIndex: 11, alignItems: 'center', top: Platform.OS === 'ios'?40:1, left: 1, borderRadius: 4 ,}}>
+            <Mc_icon name='close' size={35} color='#fff' style={{ fontWeight: '100' }} onPress={() => { p.setresizeVideo(false); p.navigation.setOptions({ headerShown: true }) }} />
           </View>
 
-          <View style={{ backgroundColor: '#666', position: 'absolute', zIndex: 11, alignItems: 'center', top: Platform.OS === 'ios'?40:1, right: 1, paddingHorizontal: 3, borderRadius: 4 }}>
-            <_Icon name='ellipsis-h' size={35} color='black' style={{ fontWeight: '100' }}
+          <View style={{ width:30,alignItems:'center',backgroundColor: '#000', position: 'absolute', zIndex: 11, top: Platform.OS === 'ios'?40:1, right: 1, paddingTop: 3,paddingBottom:1, borderRadius: 4,}}>
+            <Icon name='ellipsis-v' size={35} color='#fff' style={{ fontWeight: '100', transform:[{scaleX:.5}]  }}
               onPress={() => {
                 download(p.uri)
               }} />
           </View>
 
           <Video
-            style={{ width: p.width, height: p.height, alignSelf: 'center' }}
+            style={{ width: '100%', height: '100%', alignSelf: 'center' }}
             muted={false}
             resizeMode={"stretch"}
             paused={false}

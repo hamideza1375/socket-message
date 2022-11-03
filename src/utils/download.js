@@ -3,10 +3,10 @@ import * as RNFS from 'react-native-fs';
 import { create } from './notification'
 
 async function download(url) {
-
   let uriParts = url.split('.');
   let fileType = uriParts[uriParts.length - 1];
   const filename =  `${(new Date().getTime() + Math.random() * 10000).toString()}.${fileType}`;
+  console.log(filename);
 
   let prgs;
   if (Platform.OS === 'android') {

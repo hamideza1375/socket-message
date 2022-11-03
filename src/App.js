@@ -6,12 +6,11 @@ import { home, userState } from './state/userState';
 import { states } from './utils/context/contexts';
 import ToastProvider, { Toast } from './utils/toast';
 import { I18nManager } from 'react-native';
-import VideoChat from './VideoChat';
-import VideoConfrence from './VideoConfrence';
+import VideoConfrence from './chat/VideoConfrence';
 import Chat from './chat/Chat';
 import Register from './chat/Register';
 import Login from './chat/Login';
-import Home from './Home';
+import Home from './chat/Home';
 
 I18nManager.forceRTL(true)
 I18nManager.allowRTL(true)
@@ -44,14 +43,17 @@ const Messenger = () => {
      :
       <>
         <SafeAreaView />
+        {/* <input type='file' id='video' accept="video/*" style={{width:0,height:0,display:'none',visibility:'hidden'}} /> */}
+        {/* <input type='file' id='photo' accept="image/*" style={{width:0,height:0,display:'none',visibility:'hidden'}} /> */}
+        {/* <input type='file' id='mixin' style={{width:0,height:0,display:'none',visibility:'hidden'}} /> */}
         <ToastProvider {...p} />
         <Tab.Navigator>
 
-          <Tab.Screen name="Home" children={(props)=><Home {...p} {...props} {...reducer(p)} />} />
+          <Tab.Screen name="Home" children={(props)=><Home {...p} {...props} {...reducer(props)} />} />
           <Tab.Screen name="Chat" options={{headerStyle:{backgroundColor:'#aac'}}} children={(props) => <Chat {...p} {...props} {...reducer(p)} />} />
           <Tab.Screen name="VideoConfrence" children={(props)=><VideoConfrence {...p} {...props} {...reducer(p)} />} />
-          <Tab.Screen name="Register" children={(props)=><Register {...p} {...props} {...reducer(p)} />} />
-          <Tab.Screen name="Login" children={(props)=><Login {...p} {...props} {...reducer(p)} />} />
+          <Tab.Screen name="Register" children={(props)=><Register {...p} {...props} {...reducer(props)} />} />
+          <Tab.Screen name="Login" children={(props)=><Login {...p} {...props} {...reducer(props)} />} />
 
         </Tab.Navigator>
       </>}

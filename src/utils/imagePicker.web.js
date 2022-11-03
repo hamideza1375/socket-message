@@ -1,23 +1,57 @@
-// import * as ImagePicker from "expo-image-picker";
+
+export const imagePicker = (mediaType='photo') => new Promise(async (resolve, reject) => {
+ 
+ const root = document.getElementById('root')
+ const input = document.createElement('input')
+ input.setAttribute('type','file')
 
 
-export const imagePicker = (mediaType) => new Promise(async (resolve, reject) => {
-  // let res = await ImagePicker.launchImageLibraryAsync({
-  //   mediaTypes: mediaType === 'photo' && ImagePicker.MediaTypeOptions.Images || mediaType === 'video' && ImagePicker.MediaTypeOptions.Videos || ImagePicker.MediaTypeOptions.All
-  // });
-  // if (!res.cancelled) {
-  //  resolve(res)
-  // }
-  // else alert('دوباره امتحان کنید')
-})
+//  input.setAttribute('accept','image/*')
 
 
-export const cameraPicker = (mediaType) => new Promise(async (resolve, reject) => {
-  // let res = await ImagePicker.launchCameraAsync({
-  //   mediaTypes: mediaType === 'photo' && ImagePicker.MediaTypeOptions.Images || mediaType === 'video' && ImagePicker.MediaTypeOptions.Videos || ImagePicker.MediaTypeOptions.All
-  // });
-  // if (!res.cancelled) {
-  //  resolve(res)
-  // }
-  // else alert('دوباره امتحان کنید')
+
+
+ if(mediaType === 'photo'){ 
+ input.setAttribute('accept','image/*')
+ input.click()
+ const interval = setInterval(sum,1000)
+ function sum(){
+    if(input.files[0]) {
+      resolve(input.files[0])
+      clearInterval(interval)
+      root.removeChild(input)
+    }
+  }
+}
+
+
+if(mediaType === 'video'){ 
+  input.setAttribute('accept','video/*')
+  input.click()
+  const interval = setInterval(sum,1000)
+  function sum(){
+     if(input.files[0]) {
+       resolve(input.files[0])
+       clearInterval(interval)
+       root.removeChild(input)
+     }
+   }
+ }
+
+
+ if(mediaType === 'mixin'){ 
+  input.click()
+  const interval = setInterval(sum,1000)
+  function sum(){
+     if(input.files[0]) {
+       resolve(input.files[0])
+       clearInterval(interval)
+       root.removeChild(input)
+     }
+   }
+ }
+
+
+ root.appendChild(input);
+
 })
