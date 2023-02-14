@@ -191,8 +191,14 @@ function State() {
   const [call, setcall] = useState('')
   const [mapId] = useState(new Map())
 
-let socket = SocketIOClient.connect("http://localhost", { transports: ["websocket"] })
+// let socket = SocketIOClient.connect("http://localhost", { transports: ["websocket"] })
 
+const socket = useRef(SocketIOClient.connect(localhost, {
+  transports: ["websocket"],
+  auth: {
+    token: tokenSocket
+  }
+},))
 
 
   const useEffect = (call, state) => {

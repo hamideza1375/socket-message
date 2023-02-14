@@ -31,7 +31,7 @@ const Pv = (p) => {
   }, []));
 
 
-  
+
 
 
 
@@ -52,14 +52,15 @@ const Pv = (p) => {
         // keyExtractor={(data)=>data._id}
         keyExtractor={(data, i) => i}
         data={p.pvChatMessage}
-        style={{flexDirection:'column-reverse'}}
+        style={{ flexDirection: 'column-reverse' }}
         renderItem={({ item, index }) => (
-          <Span key={index} style={{ width: '70%', height: 40,justifyContent:'center', paddingHorizontal:8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius:10, borderWidth:'silver' }} >
+          ((item.userId === p.route.params.to) || socket.current.id === p.route.params.adminId || (socket.current.id === item.id) ) &&
+          <Span key={index} style={{ width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
             <Text >{item.message}</Text>
           </Span>
         )}
       />
-
+{/* ((p.route.params.adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&  */}
 
       <Span mt='auto' >
         <InputBottom handlePvChat={handlePvChat} p={p}></InputBottom>
@@ -69,3 +70,16 @@ const Pv = (p) => {
   )
 }
 export default Pv
+
+
+
+
+
+
+
+
+
+
+
+
+
