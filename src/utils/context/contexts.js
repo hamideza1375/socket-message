@@ -151,20 +151,26 @@ function State() {
   const [changeProposal, setchangeProposal] = useState(false)
   const [locationPermission, setlocationPermission] = useState(false)
   const [name,setname] = useState('')
+  const [allUsers,setallUsers] = useState([])
+  const [tokenUnComplete,settokenUnComplete] = useState({})
+  const [tokenSocket,settokenSocket] = useState('')
+  
+  const [userChat,setuserChat] = useState({})
   const [status, setstatus] = useState()
   const [rand, setRand] = useState(parseInt(Math.random() * 9000 + 1000));
   const refInput = useRef()
 
 
+  const [userId, setuserId] = useState('')
   const [admin, setadmin] = useState([])
   const [newMessage, setNewMessage] = useState('');
-  const [pvMessage, setPvMessage] = useState()
+  const [pvMessage, setPvMessage] = useState('')
   const [modalTitle, setModalTitle] = useState("")
-  const [pvChatMessage, setPvChatMessage] = useState("")
-  const [to1, setto1] = useState('')
+  const [pvChatMessage, setPvChatMessage] = useState([])
+  const [to, setto] = useState('')
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
-  const [first, setfirst] = useState(false)
+  const [showDropdown, setshowDropdown] = useState(false)
   const [exit, setexit] = useState(true)
   const [positionEnd, setpositionEnd] = useState(0)
   const [contentHeight, setcontentHeight] = useState(0)
@@ -178,13 +184,14 @@ function State() {
   const [id1, setId1] = useState()
   const [roomNumber] = useState('1')
   const [videoChat, setvideoChat] = useState(false)
+  const [typing, settyping] = useState('')
   const [paused] = useState(new Map())
   const [isAdmin, setisAdmin] = useState({})
   const [startRoom, setstartRoom] = useState(false)
   const [call, setcall] = useState('')
   const [mapId] = useState(new Map())
 
-let socket = SocketIOClient.connect("http://192.168.42.42", { transports: ["websocket"] })
+let socket = SocketIOClient.connect("http://localhost", { transports: ["websocket"] })
 
 
 
@@ -195,16 +202,21 @@ let socket = SocketIOClient.connect("http://192.168.42.42", { transports: ["webs
   }
 
   return {
+    tokenSocket,settokenSocket,
+    tokenUnComplete,settokenUnComplete,
+    allUsers,setallUsers,
+    userChat,setuserChat,
     socket,
     newMessage, setNewMessage,
     pvMessage, setPvMessage,
     modalTitle, setModalTitle,
     modalTitle, setModalTitle,
+    typing, settyping,
     pvChatMessage, setPvChatMessage,
-    to1, setto1,
+    to, setto,
     show2, setShow2,
     show3, setShow3,
-    first, setfirst,
+    showDropdown, setshowDropdown,
     exit, setexit,
     positionEnd, setpositionEnd,
     contentHeight, setcontentHeight,
@@ -291,6 +303,7 @@ let socket = SocketIOClient.connect("http://192.168.42.42", { transports: ["webs
     userI, setUserI,
     totalTitle, settotalTitle,
     admin, setadmin,
+    userId, setuserId,
     room, setroom,
     aa, setaa,
     id3, setid3,

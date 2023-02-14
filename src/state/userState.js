@@ -36,7 +36,7 @@ export function userState(p) {
       await p.localStorage.setItem("token", data.token);
       await p.localStorage.setItem("exp", data.exp);
       const user = p.jwt_decode(data.token)
-      p.settokenValue(user)
+      p.UncompleteValue(user)
       p.settimeChange(5)
 
       Axios.defaults.headers.common["Authorization"] = data.token
@@ -96,12 +96,12 @@ export function userState(p) {
   this._token = async () => {
     if (p.navigation?.getState()?.index === 0 && p.route?.name === 'Home') {
       const exp = await p.localStorage.getItem("exp");
-      if (exp && Number(exp) > Date.now() / 1000) return p.settoken(true)
-      if (!exp) return p.settoken(false)
+      if (exp && Number(exp) > Date.now() / 1000) return p.Uncomplete(true)
+      if (!exp) return p.Uncomplete(false)
       if (exp && Number(exp) < Date.now() / 1000) {
         await p.localStorage.removeItem("token");
         await p.localStorage.removeItem("exp");
-        return p.settoken(false)
+        return p.Uncomplete(false)
       }
     }
   }
@@ -140,7 +140,7 @@ export function userState(p) {
 
       p.localStorage.getItem("token").then((token) => {
         const user = p.jwt_decode(token)
-        token && p.settokenValue(user)
+        token && p.UncompleteValue(user)
       })
 
     }, [])
@@ -210,8 +210,8 @@ export function userState(p) {
             text: 'yes', onPress: async () => {
               p.setnavigateProfile(false)
               p.setnavigateUser(false)
-              p.settokenValue({})
-              p.settoken(false)
+              p.UncompleteValue({})
+              p.Uncomplete(false)
               p.setimageProfile('')
               await p.localStorage.removeItem("token");
               await p.localStorage.removeItem("exp");
@@ -311,7 +311,9 @@ export const home = (p) => {
       p.localStorage.getItem("token").then((token) => {
         if (token) {
           const user = p.jwt_decode(token)
-          p.setname(user.fullname)
+          p.setuserChat(user)
+          p.settokenValue(user)
+          p.settokenUnComplete(token)
         }
       })
     })()
