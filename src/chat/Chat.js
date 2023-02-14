@@ -103,6 +103,7 @@ const Chat = (p) => {
           renderItem={({ item, index }) => (
             ((item.userId === p.tokenSocket) || (adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&
             <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
+             {item.userId === p.tokenSocket && <Text style={{fontSize:9,paddingRight:3, color:'silver'}} >شما</Text>}
               <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
             </Span>
           )}
@@ -113,9 +114,9 @@ const Chat = (p) => {
             data={p.titleMessage}
             style={{ flexDirection: 'column-reverse' }}
             renderItem={({ item, index }) => (
-              ((item.userId === p.tokenSocket) || (adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&
+              (item.userId !== p.tokenSocket) &&
               <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
-                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
+                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
               </Span>
             )}
           />

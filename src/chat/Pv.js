@@ -56,6 +56,7 @@ const Pv = (p) => {
         renderItem={({ item, index }) => (
           ((item.userId === p.route.params.to) || socket.current.id === p.route.params.adminId || (socket.current.id === item.id) ) &&
           <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
+            {item.userId === p.tokenSocket && <Text style={{fontSize:9,paddingRight:3, color:'silver'}} >شما</Text>}
             <Text >{item.message}</Text>
           </Span>
         )}
