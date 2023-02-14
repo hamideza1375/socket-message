@@ -55,7 +55,7 @@ const Pv = (p) => {
         style={{ flexDirection: 'column-reverse' }}
         renderItem={({ item, index }) => (
           ((item.userId === p.route.params.to) || socket.current.id === p.route.params.adminId || (socket.current.id === item.id) ) &&
-          <Span key={index} style={{ width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
+          <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
             <Text >{item.message}</Text>
           </Span>
         )}

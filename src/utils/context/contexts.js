@@ -190,7 +190,9 @@ function State() {
   const [startRoom, setstartRoom] = useState(false)
   const [call, setcall] = useState('')
   const [mapId] = useState(new Map())
+  const [titleMessage,settitleMessage] = useState([])
 
+  
 // let socket = SocketIOClient.connect("http://localhost", { transports: ["websocket"] })
 
 const socket = useRef(SocketIOClient.connect(localhost, {
@@ -242,6 +244,7 @@ const socket = useRef(SocketIOClient.connect(localhost, {
     call, setcall,
     mapId,
 
+    titleMessage,settitleMessage,
     create, close,
     rand,setRand,refInput,
     loginUser,registerUser, verifycodeRegister, imagechat, VideoChat,

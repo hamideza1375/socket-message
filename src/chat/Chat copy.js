@@ -27,22 +27,8 @@ const Chat = (p) => {
 
     p.socket.current.on("pvChat", (data, users, messages) => {
       p.setPvChatMessage(messages)
-
-      let titleMessage = []
-
-      for (let i of messages) {
-
-        // console.log(n);
-        let find = titleMessage.find((msg) => (msg.userId === i.userId))
-
-        if (!find) {
-          titleMessage.push(i)
-          p.settitleMessage(titleMessage)
-          console.log(titleMessage);
-        }
+      if (p.socket.current.id == data.to) {
       }
-
-
     });
 
     if (p.tokenValue.isAdmin === 'chief') p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
@@ -95,8 +81,9 @@ const Chat = (p) => {
     <View style={{ flex: 1, overflow: 'hidden' }} >
 
       <View onLayout={() => { if (p.tokenValue.isAdmin !== 'chief') { p.setto('1') } }} style={{ flex: 1 }} >
-
-        {p.tokenValue.isAdmin !== 'chief' ? <FlatList
+        {/* <div style={{cursor:''}} ></div> */}
+        <FlatList
+          // keyExtractor={(data)=>data._id}
           keyExtractor={(data, i) => i}
           data={p.pvChatMessage}
           style={{ flexDirection: 'column-reverse' }}
@@ -107,19 +94,7 @@ const Chat = (p) => {
             </Span>
           )}
         />
-          :
-          <FlatList
-            keyExtractor={(data, i) => i}
-            data={p.titleMessage}
-            style={{ flexDirection: 'column-reverse' }}
-            renderItem={({ item, index }) => (
-              ((item.userId === p.tokenSocket) || (adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&
-              <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
-                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
-              </Span>
-            )}
-          />
-        }
+
         {(p.tokenValue.isAdmin !== 'chief') && <Span mt='auto' >
           <InputBottom handlePvChat={handlePvChat} p={p}></InputBottom>
         </Span>}
