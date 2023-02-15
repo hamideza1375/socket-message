@@ -1,31 +1,28 @@
 import React, { useCallback } from 'react';
 import { Text, View, FlatList } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native';
-import { Badge, Button, P, Span } from '../Components/Html';
+import { Badge, Button, Span } from '../Components/Html';
 import InputBottom from './components/InputBottom';
 
-let adminId, f, localstoragetrue
+let adminId
 
 const Chat = (p) => {
-
-
-
 
   useFocusEffect(useCallback(() => {
 
     p.socket.current.on("online", (users) => {
-      p.setallUsers(users)
       const user = users.find((user) => (user.user.isAdmin === 'chief'))
       adminId = user?.socketId
-      const user2 = users.find((user) => (user.user.userId === p.tokenValue.userId))
-      p.setuserId(user2)
+      // const user2 = users.find((user) => (user.user.userId === p.tokenValue.userId))
+      // p.setuserId(user2)
     });
 
 
 
 
     p.socket.current.on("mongoMsg", async (messages) => {
-      p.setPvChatMessage(messages)
+    if(!p.localstoragetrue) {
+       p.setPvChatMessage(messages)
       let titleMessage = []
       p.settitleMessage([])
       for (let i of messages) {
@@ -41,7 +38,32 @@ const Chat = (p) => {
           })
         }
       }
+    }
     })
+
+
+    p.socket.current.on("pvChat", (data, users, messages) => {
+      p.setPvChatMessage(messages)
+      let titleMessage = []
+      let titleMessage2 = []
+      for (let i of messages) {
+        let find = titleMessage.find((msg) => (msg.userId === i.userId))
+        if (!find) {
+          titleMessage.push(i)
+          p.localStorage.getItem(i.userId).then((localStorage) => {
+            if (localStorage) {
+              let parse = JSON.parse(localStorage)
+              p.settitleMessage(titleMsg => {
+                titleMessage2.push({ badgeActive: i.getTime > parse.getTime, ...i })
+
+                return titleMessage2
+              })
+            }
+            p.setlocalstoragetrue(true)
+          })
+        }
+      }
+    });
 
 
 
@@ -56,30 +78,24 @@ const Chat = (p) => {
             if (localStorage) {
               let parse = JSON.parse(localStorage)
               p.settitleMessage(titleMsg => {
-                // msg[i] = { badgeActive: i.getTime > parse.getTime, ...i }
-
                 let ms = [...titleMsg]
-
                 let findIndex = ms.findIndex((m) => (m.userId === i.userId))
-
                 ms[findIndex] = { badgeActive: i.getTime > parse.getTime, ...i }
-
                 return ms
-
-                 })
+              })
             }
             p.setlocalstoragetrue(true)
           })
         }
       }
-
-
     });
 
     p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
 
     return () => {
       p.setmessages([])
+      p.setPvChatMessage([])
+      p.settitleMessage([])
       p.socket.current.emit("delRemove")
     }
 
@@ -138,11 +154,11 @@ const Chat = (p) => {
               </Span>
             )}
           />
+
           :
+
           <>
-
             <Button onClick={() => { p.setto('') }} >back</Button>
-
             {!p.to ? <FlatList
               keyExtractor={(data, i) => data._id}
               data={p.titleMessage}
@@ -150,14 +166,14 @@ const Chat = (p) => {
                 (item.userId !== p.tokenSocket) &&
                 <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
                   <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.setuserId(item.userId); p.localStorage.setItem(item.userId, JSON.stringify(item)).then(() => { }) /* p.navigation.navigate('Pv', { userId: item.userId, adminId, item }) */ } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
-
                   {item.badgeActive && <Badge color={'green'} />}
                 </Span>
               )}
             />
-              :
-              <View style={{ flex: 1, overflow: 'hidden' }} >
 
+              :
+
+              <View style={{ flex: 1, overflow: 'hidden' }} >
                 <FlatList
                   inverted
                   keyExtractor={(data) => data._id}
@@ -173,7 +189,6 @@ const Chat = (p) => {
                 <Span mt='auto' >
                   <InputBottom handlePvChat={handlePvChat} p={p}></InputBottom>
                 </Span>
-
               </View>
             }
           </>
