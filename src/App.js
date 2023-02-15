@@ -44,7 +44,7 @@ const Messenger = () => {
       <>
         <SafeAreaView />
         <ToastProvider {...p} />
-        <Tab.Navigator>
+        <Tab.Navigator >
           <Tab.Screen name="Home" children={(props)=><Home {...p} {...props} {...reducer(props)} />} />
           <Tab.Screen name="Chat" options={{headerStyle:{backgroundColor:'#aac'}}} children={(props) => <Chat {...p} {...props} {...reducer(p)} />} />
           <Tab.Screen name="Pv" options={{headerStyle:{backgroundColor:'#aac'}}} children={(props) => <Pv {...p} {...props} {...reducer(p)} />} />
@@ -61,9 +61,26 @@ const Messenger = () => {
 
 
 
+const linking = {
+  prefixes: ['localhost:19006://', 'http://localhost:19006'],
+  config: {
+    screens: {
+      Home: '/home',
+      Chat: 'chat',
+      Pv: 'pv',
+      Register: 'register',
+      Login: 'login',
+
+    },
+  },
+};
+
+
+
+
 const App = () => {
   return (
-    <NavigationContainer >
+    <NavigationContainer linking={linking} >
       <View flex={1} style={{ minHeight: Platform.OS === 'web' ? '100vh' : null }} dir='rtl' >
         <Messenger />
       </View>

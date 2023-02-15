@@ -28,18 +28,18 @@ const Chat = (p) => {
 
 
     p.socket.current.on("mongoMsg", async (messages) => {
+
       p.setPvChatMessage(messages)
       let titleMessage = []
-      let msgArray = messages
-      for (let i of msgArray) {
+      p.settitleMessage([])
+      // let msgArray = messages
+      for (let i of messages) {
         let find = titleMessage.find((msg) => (msg.userId === i.userId))
         if (!find) {
           titleMessage.push(i)
-          p.settitleMessage(titleMessage)
-          console.log('messages', titleMessage );
+          p.settitleMessage(titleMsg=>titleMsg.concat(i))
         }
       }
-
     })
 
 
@@ -59,12 +59,12 @@ const Chat = (p) => {
 
     });
 
-    p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
+    p.tokenValue.isAdmin === 'chief' && p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
 
 
     return () => {
       p.setmessages([])
-      p.socket.current.emit("delRemove")
+     p.tokenValue.isAdmin === 'chief' &&  p.socket.current.emit("delRemove")
     }
 
   }, []));
@@ -126,7 +126,6 @@ const Chat = (p) => {
           />
           :
           <FlatList
-          
           keyExtractor={(data, i) => data._id}
             data={p.titleMessage}
             renderItem={({ item, index }) => (
