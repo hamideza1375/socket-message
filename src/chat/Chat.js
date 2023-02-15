@@ -1,8 +1,6 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Text, View, FlatList } from 'react-native'
-import SocketIOClient from 'socket.io-client';
 import { useFocusEffect } from '@react-navigation/native';
-import { localhost } from '../utils/axios/axios';
 import { Badge, P, Span } from '../Components/Html';
 import InputBottom from './components/InputBottom';
 
@@ -32,12 +30,20 @@ const Chat = (p) => {
       p.setPvChatMessage(messages)
       let titleMessage = []
       p.settitleMessage([])
-      // let msgArray = messages
       for (let i of messages) {
         let find = titleMessage.find((msg) => (msg.userId === i.userId))
         if (!find) {
           titleMessage.push(i)
-          p.settitleMessage(titleMsg=>titleMsg.concat(i))
+          p.settitleMessage(titleMsg => titleMsg.concat(i))
+
+          // const a = async () => {
+          //   await p.localStorage.setItem(i._id, JSON.stringify(i))
+          //   let localStorage = await p.localStorage.getItem(i._id)
+          //   let parse = JSON.parse(localStorage)
+          //   console.log('i', parse);
+          // }
+          // a()
+
         }
       }
     })
@@ -59,12 +65,12 @@ const Chat = (p) => {
 
     });
 
-    p.tokenValue.isAdmin === 'chief' && p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
+    p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
 
 
     return () => {
       p.setmessages([])
-     p.tokenValue.isAdmin === 'chief' &&  p.socket.current.emit("delRemove")
+      p.socket.current.emit("delRemove")
     }
 
   }, []));
@@ -107,32 +113,29 @@ const Chat = (p) => {
 
   return (
     <View style={{ flex: 1, overflow: 'hidden' }} >
-
       <View onLayout={() => { if (p.tokenValue.isAdmin !== 'chief') { p.setto('1') } }} style={{ flex: 1 }} >
-
         {p.tokenValue.isAdmin !== 'chief' ?
           <FlatList
             inverted
             keyExtractor={(data, i) => data._id}
             data={p.pvChatMessage}
-            // style={{ flexDirection: 'column-reverse' }}
             renderItem={({ item, index }) => (
               ((item.userId === p.tokenSocket) || (adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&
-              <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to !== p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
+              <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: item.to === p.to ? '#f8f8f8' : '#fff', borderWidth: 1, alignSelf: item.to !== p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
                 {item.userId === p.tokenSocket && <Text style={{ fontSize: 9, paddingRight: 3, color: 'silver' }} >شما</Text>}
-                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
+                <Text>{item.message}</Text>
               </Span>
             )}
           />
           :
           <FlatList
-          keyExtractor={(data, i) => data._id}
+            keyExtractor={(data, i) => data._id}
             data={p.titleMessage}
             renderItem={({ item, index }) => (
               (item.userId !== p.tokenSocket) &&
               <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
-                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
-                <Badge color={'green'} />
+                <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { userId: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
+                {<Badge color={'green'} />}
               </Span>
             )}
           />
@@ -140,9 +143,7 @@ const Chat = (p) => {
         {(p.tokenValue.isAdmin !== 'chief') && <Span mt='auto' >
           <InputBottom handlePvChat={handlePvChat} p={p}></InputBottom>
         </Span>}
-
       </View>
-
     </View>
   )
 }
