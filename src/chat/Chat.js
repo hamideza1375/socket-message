@@ -37,7 +37,6 @@ const Chat = (p) => {
               let parse = JSON.parse(localStorage)
               p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
             }
-            // p.localStorage.setItem(i.userId, JSON.stringify(i)).then(() => { })
             p.setlocalstoragetrue(true)
           })
         }
@@ -56,7 +55,18 @@ const Chat = (p) => {
           p.localStorage.getItem(i.userId).then((localStorage) => {
             if (localStorage) {
               let parse = JSON.parse(localStorage)
-              // p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
+              p.settitleMessage(titleMsg => {
+                // msg[i] = { badgeActive: i.getTime > parse.getTime, ...i }
+
+                let ms = [...titleMsg]
+
+                let findIndex = ms.findIndex((m) => (m.userId === i.userId))
+
+                ms[findIndex] = { badgeActive: i.getTime > parse.getTime, ...i }
+
+                return ms
+
+                 })
             }
             p.setlocalstoragetrue(true)
           })

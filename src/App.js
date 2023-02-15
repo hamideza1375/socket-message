@@ -7,7 +7,6 @@ import { states } from './utils/context/contexts';
 import ToastProvider, { Toast } from './utils/toast';
 import { I18nManager } from 'react-native';
 import Chat from './chat/Chat';
-import Pv from './chat/Pv';
 import Login from './chat/Login';
 import Register from './chat/Register';
 import Home from './chat/Home';
@@ -47,7 +46,6 @@ const Messenger = () => {
         <Tab.Navigator >
           <Tab.Screen name="Home" children={(props)=><Home {...p} {...props} {...reducer(props)} />} />
           <Tab.Screen name="Chat" options={{headerStyle:{backgroundColor:'#aac'}}} children={(props) => <Chat {...p} {...props} {...reducer(p)} />} />
-          <Tab.Screen name="Pv" options={{headerStyle:{backgroundColor:'#aac'}}} children={(props) => <Pv {...p} {...props} {...reducer(p)} />} />
           <Tab.Screen name="Login" children={(props)=><Login {...p} {...props} {...reducer(props)} />} />
           <Tab.Screen name="Register" children={(props)=><Register {...p} {...props} {...reducer(props)} />} />
         </Tab.Navigator>
@@ -67,7 +65,6 @@ const linking = {
     screens: {
       Home: '/home',
       Chat: 'chat',
-      Pv: 'pv',
       Register: 'register',
       Login: 'login',
 

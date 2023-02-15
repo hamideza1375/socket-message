@@ -57,7 +57,7 @@ httpServer.listen(port, () => { console.log('conected'); });
 let users = [],
   messages = []
 io.on("connection", (socket) => {
-
+ 
 
   socket.on("online", async (data) => {
     socket.join('1');
@@ -72,7 +72,7 @@ io.on("connection", (socket) => {
 
   socket.on("pvChat", async (data) => {
     try {
-      await new PvMessageModels({ message: data.pvMessage, id: socket.id, to: data.to, userId: data.userId, createdAt: new Date(), getTime: new Date().getTime() }).save()
+      await new PvMessageModels({ message: data.pvMessage, id: socket.id, to: data.to, userId: data.userId, createdAt: new Date(), getTime:  new Date().getTime() }).save()
       const messages = await PvMessageModels.find().sort({ createdAt: -1 })
     console.log("mongoMsg", messages);
       if (data.to !== '1') {
@@ -100,7 +100,6 @@ io.on("connection", (socket) => {
     try {
       const user = socket.handshake.auth.token
       if (user) {
-        // console.log('user', user);
         users = users.filter((u) => u.userId !== user)
         io.sockets.emit("online", users);
       }

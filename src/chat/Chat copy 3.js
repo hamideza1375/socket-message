@@ -56,7 +56,18 @@ const Chat = (p) => {
           p.localStorage.getItem(i.userId).then((localStorage) => {
             if (localStorage) {
               let parse = JSON.parse(localStorage)
-              // p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
+              p.settitleMessage(titleMsg => {
+                // msg[i] = { badgeActive: i.getTime > parse.getTime, ...i }
+
+                let ms = [...titleMsg]
+
+                let findIndex = ms.findIndex((m) => (m.userId === i.userId))
+
+                ms[findIndex] = { badgeActive: i.getTime > parse.getTime, ...i }
+
+                return ms
+
+                 })
             }
             p.setlocalstoragetrue(true)
           })
@@ -139,7 +150,7 @@ const Chat = (p) => {
               renderItem={({ item, index }) => (
                 (item.userId !== p.tokenSocket) &&
                 <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
-                  <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.setuserId(item.userId) /* p.navigation.navigate('Pv', { userId: item.userId, adminId, item }) */ } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
+                  <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.setuserId(item.userId); p.localStorage.setItem(item.userId, JSON.stringify(item)).then(() => { }) /* p.navigation.navigate('Pv', { userId: item.userId, adminId, item }) */ } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
 
                   {item.badgeActive && <Badge color={'green'} />}
                 </Span>
