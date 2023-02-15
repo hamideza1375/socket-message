@@ -49,10 +49,9 @@ const Pv = (p) => {
     <View style={{ flex: 1, overflow: 'hidden' }} >
 
       <FlatList
-        // keyExtractor={(data)=>data._id}
-        keyExtractor={(data, i) => i}
+        inverted
+        keyExtractor={(data) => data._id}
         data={p.pvChatMessage}
-        style={{ flexDirection: 'column-reverse' }}
         renderItem={({ item, index }) => (
           ((item.userId === p.route.params.to) || socket.current.id === p.route.params.adminId || (socket.current.id === item.id) || (item.to === p.to)) &&
           <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to !== p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
@@ -61,7 +60,6 @@ const Pv = (p) => {
           </Span>
         )}
       />
-      {/* ((p.route.params.adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&  */}
       <Span mt='auto' >
         <InputBottom handlePvChat={handlePvChat} p={p}></InputBottom>
       </Span>
