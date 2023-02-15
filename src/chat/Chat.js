@@ -48,7 +48,6 @@ const Chat = (p) => {
       p.setPvChatMessage(messages)
       let titleMessage = []
       for (let i of messages) {
-        // console.log(n);
         let find = titleMessage.find((msg) => (msg.userId === i.userId))
         if (!find) {
           titleMessage.push(i)
@@ -60,7 +59,7 @@ const Chat = (p) => {
 
     });
 
-    if (p.tokenValue.isAdmin === 'chief') p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
+     p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
 
 
     return () => {
@@ -118,10 +117,9 @@ const Chat = (p) => {
           style={{ flexDirection: 'column-reverse' }}
           renderItem={({ item, index }) => (
             ((item.userId === p.tokenSocket) || (adminId === p.socket.current.id) || (item.to === p.tokenSocket)) &&
-            <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
+            <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to !== p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
              {item.userId === p.tokenSocket && <Text style={{fontSize:9,paddingRight:3, color:'silver'}} >شما</Text>}
               <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
-           <P>knfiefeifjei</P>
             </Span>
           )}
         />
