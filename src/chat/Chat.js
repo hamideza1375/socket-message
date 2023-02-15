@@ -13,8 +13,6 @@ const Chat = (p) => {
     p.socket.current.on("online", (users) => {
       const user = users.find((user) => (user.user.isAdmin === 'chief'))
       adminId = user?.socketId
-      // const user2 = users.find((user) => (user.user.userId === p.tokenValue.userId))
-      // p.setuserId(user2)
     });
 
 
@@ -40,30 +38,6 @@ const Chat = (p) => {
       }
     }
     })
-
-
-    p.socket.current.on("pvChat", (data, users, messages) => {
-      p.setPvChatMessage(messages)
-      let titleMessage = []
-      let titleMessage2 = []
-      for (let i of messages) {
-        let find = titleMessage.find((msg) => (msg.userId === i.userId))
-        if (!find) {
-          titleMessage.push(i)
-          p.localStorage.getItem(i.userId).then((localStorage) => {
-            if (localStorage) {
-              let parse = JSON.parse(localStorage)
-              p.settitleMessage(titleMsg => {
-                titleMessage2.push({ badgeActive: i.getTime > parse.getTime, ...i })
-
-                return titleMessage2
-              })
-            }
-            p.setlocalstoragetrue(true)
-          })
-        }
-      }
-    });
 
 
 
@@ -158,7 +132,8 @@ const Chat = (p) => {
           :
 
           <>
-            <Button onClick={() => { p.setto('') }} >back</Button>
+            {p.to && <Button onClick={() => { p.setto('') }} >back</Button>}
+
             {!p.to ? <FlatList
               keyExtractor={(data, i) => data._id}
               data={p.titleMessage}
