@@ -25,16 +25,31 @@ const Chat = (p) => {
     });
 
 
+    
+
+
+    p.socket.current.on("mongoMsg", async (messages) => {
+      p.setPvChatMessage(messages)
+      let titleMessage = []
+      for (let i of messages) {
+        let find = titleMessage.find((msg) => (msg.userId === i.userId))
+        if (!find) {
+          titleMessage.push(i)
+          p.settitleMessage(titleMessage)
+          console.log(titleMessage);
+        }
+      }
+
+    })
+
+
+
     p.socket.current.on("pvChat", (data, users, messages) => {
       p.setPvChatMessage(messages)
-
       let titleMessage = []
-
       for (let i of messages) {
-
         // console.log(n);
         let find = titleMessage.find((msg) => (msg.userId === i.userId))
-
         if (!find) {
           titleMessage.push(i)
           p.settitleMessage(titleMessage)
@@ -96,8 +111,9 @@ const Chat = (p) => {
 
       <View onLayout={() => { if (p.tokenValue.isAdmin !== 'chief') { p.setto('1') } }} style={{ flex: 1 }} >
 
-        {p.tokenValue.isAdmin !== 'chief' ? <FlatList
-          keyExtractor={(data, i) => i}
+        {p.tokenValue.isAdmin !== 'chief' ?
+         <FlatList
+          keyExtractor={(data, i) => data._id}
           data={p.pvChatMessage}
           style={{ flexDirection: 'column-reverse' }}
           renderItem={({ item, index }) => (
@@ -105,6 +121,7 @@ const Chat = (p) => {
             <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1, alignSelf: item.to === p.to ? 'flex-end' : 'flex-start', borderRadius: 10, borderWidth: 'silver' }} >
              {item.userId === p.tokenSocket && <Text style={{fontSize:9,paddingRight:3, color:'silver'}} >شما</Text>}
               <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { to: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.message}</Text>
+           <P>knfiefeifjei</P>
             </Span>
           )}
         />
