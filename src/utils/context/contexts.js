@@ -154,6 +154,7 @@ function State() {
   const [allUsers,setallUsers] = useState([])
   const [tokenUnComplete,settokenUnComplete] = useState({})
   const [tokenSocket,settokenSocket] = useState('')
+  const [checkActiveBadge,setcheckActiveBadge] = useState([])
   
   const [userChat,setuserChat] = useState({})
   const [status, setstatus] = useState()
@@ -191,6 +192,7 @@ function State() {
   const [call, setcall] = useState('')
   const [mapId] = useState(new Map())
   const [titleMessage,settitleMessage] = useState([])
+  const [localstoragetrue, setlocalstoragetrue,] = useState(false)
 
   
 // let socket = SocketIOClient.connect("http://localhost", { transports: ["websocket"] })
@@ -210,6 +212,8 @@ const socket = useRef(SocketIOClient.connect(localhost, {
   }
 
   return {
+    localstoragetrue, setlocalstoragetrue,
+    checkActiveBadge,setcheckActiveBadge,
     tokenSocket,settokenSocket,
     tokenUnComplete,settokenUnComplete,
     allUsers,setallUsers,

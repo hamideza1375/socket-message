@@ -26,36 +26,56 @@ const Chat = (p) => {
 
 
     p.socket.current.on("mongoMsg", async (messages) => {
-      if (!p.localstoragetrue) {
 
       p.setPvChatMessage(messages)
       let titleMessage = []
       p.settitleMessage([])
-      for (let i of messages) {
-        let find = titleMessage.find((msg) => (msg.userId === i.userId))
-        if (!find) {
-          titleMessage.push(i)
-          
-          
-          p.localStorage.getItem(i.userId).then((localStorage) => {
-            if (localStorage) {
-              let parse = JSON.parse(localStorage)
-              p.settitleMessage(titleMsg => titleMsg.concat({badgeActive: i.getTime > parse.getTime,...i}))
-              // console.log(parse.message, i.getTime > parse.getTime);
+      // for (let i of messages) {
+      //   let find = titleMessage.find((msg) => (msg.userId === i.userId))
+      //   if (!find) {
+      //     titleMessage.push(i)
+      //     p.settitleMessage(titleMsg => titleMsg.concat(i))
+
+
+      //     p.localStorage.getItem(i.userId).then((localStorage) => {
+      //       if (localStorage) {
+      //         let parse = JSON.parse(localStorage)
+      //         // p.setcheckActiveBadge(checkActiveBadge => checkActiveBadge.concat({ userId: i.userId, falsetrue: i.getTime > parse.getTime }))
+      //         console.log(parse.message, i.getTime > parse.getTime);
+      //       }
+
+      //       if (!localstoragetrue) {
+      //         p.localStorage.setItem(i.userId, JSON.stringify(i)).then(() => { })
+      //         localstoragetrue = true
+
+      //       }
+      //     })
+
+      //   }
+      // }
+
+
+      for (let i in messages) {
+        for (let n in messages) {
+          if (messages[i].userId !== messages[n].userId) {
+          p.settitleMessage(titleMsg => titleMsg.concat(messages[i]))
+
+            const a = async () => {
+              let localStorage = await p.localStorage.getItem(messages[i].userId)
+              if (localStorage) {
+                let parse = JSON.parse(localStorage)
+                p.setcheckActiveBadge(checkActiveBadge => checkActiveBadge.concat({ userId: messages[i].userId, falsetrue: messages[i].getTime > parse.getTime }))
+                console.log('i', messages[i].getTime , parse.getTime);
+              }
             }
-
-              p.localStorage.setItem(i.userId, JSON.stringify(i)).then(() => { })
-              p.setlocalstoragetrue(true)
-
-
-
-
-            console.log('titleMessage', p.titleMessage);
-          })
-
+            a()
+            p.localStorage.setItem(messages[i].userId, JSON.stringify(messages[i])).then(() => { })
+            // console.log('n.userId', titleMessage[i].message);
+          }
         }
       }
-    }
+
+
 
     })
 
@@ -146,8 +166,8 @@ const Chat = (p) => {
               (item.userId !== p.tokenSocket) &&
               <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
                 <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.navigation.navigate('Pv', { userId: item.userId, adminId }) } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
-                
-                {item.badgeActive && <Badge color={'green'} />}
+                {
+                  <Badge color={'green'} />}
               </Span>
             )}
           />
