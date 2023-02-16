@@ -21,23 +21,30 @@ const Chat = (p) => {
     p.socket.current.on("mongoMsg", async (messages) => {
       if (!p.localstoragetrue) {
         p.setPvChatMessage(messages)
-        let titleMessage = []
-        p.settitleMessage([])
-        for (let i of messages) {
-          let find = titleMessage.find((msg) => (msg.userId === i.userId))
-          if (!find) {
-            titleMessage.push(i)
-            p.localStorage.getItem(i.userId).then((localStorage) => {
-              if (localStorage) {
-                let parse = JSON.parse(localStorage)
-                p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
-              }
-              p.setlocalstoragetrue(true)
-            })
+        if (p.tokenValue.isAdmin === 'chief') {
+          let titleMessage = []
+          p.settitleMessage([])
+          for (let i of messages) {
+            let find = titleMessage.find((msg) => (msg.userId === i.userId))
+            if (!find) {
+              titleMessage.push(i)
+              p.localStorage.getItem(i.userId).then((localStorage) => {
+                if (localStorage) {
+                  let parse = JSON.parse(localStorage)
+                  p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
+                }
+                else {
+                  p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: false, ...i }))
+                }
+                p.setlocalstoragetrue(true)
+              })
+            }
           }
         }
       }
     })
+
+
 
 
 
@@ -64,8 +71,9 @@ const Chat = (p) => {
       }
     });
 
-    p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
 
+
+    p.socket.current.on("delRemove", (users) => { p.setallUsers(users) })
     return () => {
       p.setmessages([])
       p.setPvChatMessage([])
