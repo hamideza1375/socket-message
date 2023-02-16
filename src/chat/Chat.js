@@ -19,29 +19,29 @@ const Chat = (p) => {
 
 
     p.socket.current.on("mongoMsg", async (messages) => {
-    if(!p.localstoragetrue) {
-       p.setPvChatMessage(messages)
-      let titleMessage = []
-      p.settitleMessage([])
-      for (let i of messages) {
-        let find = titleMessage.find((msg) => (msg.userId === i.userId))
-        if (!find) {
-          titleMessage.push(i)
-          p.localStorage.getItem(i.userId).then((localStorage) => {
-            if (localStorage) {
-              let parse = JSON.parse(localStorage)
-              p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
-            }
-            p.setlocalstoragetrue(true)
-          })
+      if (!p.localstoragetrue) {
+        p.setPvChatMessage(messages)
+        let titleMessage = []
+        p.settitleMessage([])
+        for (let i of messages) {
+          let find = titleMessage.find((msg) => (msg.userId === i.userId))
+          if (!find) {
+            titleMessage.push(i)
+            p.localStorage.getItem(i.userId).then((localStorage) => {
+              if (localStorage) {
+                let parse = JSON.parse(localStorage)
+                p.settitleMessage(titleMsg => titleMsg.concat({ badgeActive: i.getTime > parse.getTime, ...i }))
+              }
+              p.setlocalstoragetrue(true)
+            })
+          }
         }
       }
-    }
     })
 
 
 
-    p.socket.current.on("pvChat", (data, users, messages) => {
+    p.socket.current.on("pvChat", (messages) => {
       p.setPvChatMessage(messages)
       let titleMessage = []
       for (let i of messages) {
@@ -53,9 +53,9 @@ const Chat = (p) => {
               let parse = JSON.parse(localStorage)
               p.settitleMessage(titleMsg => {
                 let ms = [...titleMsg]
-                let findIndex = ms.findIndex((m) => (m.userId === i.userId))
-                ms[findIndex] = { badgeActive: i.getTime > parse.getTime, ...i }
-                return ms
+                let filter = ms.filter((m) => (m.userId !== i.userId))
+                filter.push({ badgeActive: i.getTime > parse.getTime, ...i })
+                return filter
               })
             }
             p.setlocalstoragetrue(true)
@@ -134,17 +134,18 @@ const Chat = (p) => {
           <>
             {p.to && <Button onClick={() => { p.setto('') }} >back</Button>}
 
-            {!p.to ? <FlatList
-              keyExtractor={(data, i) => data._id}
-              data={p.titleMessage}
-              renderItem={({ item, index }) => (
-                (item.userId !== p.tokenSocket) &&
-                <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
-                  <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.setuserId(item.userId); p.localStorage.setItem(item.userId, JSON.stringify(item)).then(() => { }) /* p.navigation.navigate('Pv', { userId: item.userId, adminId, item }) */ } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
-                  {item.badgeActive && <Badge color={'green'} />}
-                </Span>
-              )}
-            />
+            {!p.to ?
+              <FlatList
+                keyExtractor={(data, i) => data._id}
+                data={p.titleMessage}
+                renderItem={({ item, index }) => (
+                  (item.userId !== p.tokenSocket) &&
+                  <Span key={index} style={{ marginVertical: 10, marginHorizontal: 2, width: '70%', height: 40, justifyContent: 'center', paddingHorizontal: 8, backgroundColor: 'white', borderWidth: 1 }} >
+                    <Text onClick={() => { if ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) { p.setto(item.userId); p.setuserId(item.userId); p.localStorage.setItem(item.userId, JSON.stringify(item)).then(() => { }) /* p.navigation.navigate('Pv', { userId: item.userId, adminId, item }) */ } }} style={{ fontSize: 12, cursor: ((p.tokenValue.isAdmin === 'chief') && (item.to === '1')) ? 'pointer' : '' }}>{item.userId}</Text>
+                    {item.badgeActive && <Badge color={'green'} />}
+                  </Span>
+                )}
+              />
 
               :
 
